@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claim - InsureMax</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #181826 0%, #23234a 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .items-center { align-items: center; }
+        .flex-col { flex-direction: column; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-white { color: #fff; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-gray-500 { color: #6b7280; }
+        .text-indigo-600 { color: #4f46e5; }
+        .text-lime-300 { color: #b9ff66; }
+        .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+        .from-purple-400 { --tw-gradient-from: #a78bfa; }
+        .to-pink-400 { --tw-gradient-to: #f472b6; }
+        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+        .text-transparent { color: transparent; }
+        .glass-effect {
+            background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, rgba(120,119,198,0.10) 100%);
+            backdrop-filter: blur(24px);
+            border-radius: 1.5rem;
+            box-shadow: 0 12px 32px 0 rgba(79,70,229,0.10), 0 2px 8px 0 rgba(185,255,102,0.08);
+            padding: 2.5rem 2rem 2rem 2rem;
+            border: 1.5px solid rgba(255,255,255,0.10);
+            margin-bottom: 2.5rem;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+        .glass-effect:hover {
+            box-shadow: 0 24px 48px 0 rgba(79,70,229,0.16), 0 8px 24px 0 rgba(185,255,102,0.12);
+            transform: translateY(-4px) scale(1.01);
+        }
+        .customize-plan-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            letter-spacing: -1px;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(79,70,229,0.08);
+        }
+        .customize-plan-section {
+            margin-bottom: 1.5rem;
+        }
+        .chip {
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #9ca3af;
+            border-radius: 9999px;
+            padding: 8px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+        .chip.active {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px 0 rgba(79,70,229,0.15);
+            border-color: #7c3aed;
+        }
+        .plan-card {
+            transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid rgba(255,255,255,0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .plan-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), 0 8px 16px rgba(185,255,102,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .plan-card.selected {
+            border-color: #B9FF66;
+        }
+        .custom-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.12);
+            outline: none;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #B9FF66;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .custom-slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #B9FF66;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .modal {
+            transition: all 0.3s ease;
+            background: rgba(31,31,31,0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .hidden { display: none; }
+        .block { display: block; }
+        @media (max-width: 768px) {
+            .container { padding: 0 0.5rem; }
+            .plan-card { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <main class="container px-4 pt-6" style="margin-top: 2.5rem;">
+        <!-- Filter Chips -->
+        <div class="flex flex-wrap gap-3 mb-6">
+            <div class="chip active" data-filter="all">All Policies</div>
+            <div class="chip" data-filter="car">Car</div>
+            <div class="chip" data-filter="bike">Bike</div>
+            <div class="chip" data-filter="health">Health</div>
+            <div class="chip" data-filter="home">Home</div>
+        </div>
+        <!-- Customize Plan Card -->
+        <div class="glass-effect">
+            <h3 class="customize-plan-title">Customize Your Plan</h3>
+            <div class="customize-plan-section">
+                <div class="flex justify-between mb-1">
+                    <span class="text-sm">Sum Insured</span>
+                    <span class="text-sm font-bold" id="sum-insured-value">$32,000</span>
+                </div>
+                <input type="range" min="10000" max="100000" value="32000" step="1000" class="custom-slider" id="sum-insured-slider">
+                <div class="flex justify-between mt-1 text-xs text-gray-400">
+                    <span>$10K</span>
+                    <span>$100K</span>
+                </div>
+            </div>
+            <div class="customize-plan-section flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+                <div>
+                    <span class="text-xs">Estimated monthly premium</span>
+                    <p class="font-bold text-lg" id="estimated-premium">$25.00</p>
+                </div>
+                <button class="bg-gradient-to-r from-purple-400 to-pink-400 text-white px-6 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-all shadow-lg mt-2 md:mt-0">
+                    Apply Now
+                </button>
+            </div>
+        </div>
+        <!-- Plans Section -->
+        <div class="mb-4 flex justify-between items-center">
+            <h4 class="text-lg font-semibold">Recommended Plans</h4>
+            <div class="flex items-center gap-2">
+                <span class="text-sm">Sort by:</span>
+                <select class="chip" id="sort-select" style="background:rgba(255,255,255,0.12);color:white;">
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                    <option value="coverage">Coverage</option>
+                </select>
+            </div>
+        </div>
+        <div id="plans-container">
+            <!-- Car Plans -->
+            <div class="plan-card flex flex-col md:flex-row justify-between items-start" data-type="car" data-price="25" data-coverage="65000">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl">🚗</span>
+                        <h4 class="font-semibold">Premium Car Insurance</h4>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-sm mb-1">Coverage: Up to $65,000</p>
+                        <p class="text-sm mb-1">Includes: Accident, Theft, Natural Disasters</p>
+                        <p class="font-bold text-lg text-lime-300">$25.00/month</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4 md:mt-0">
+                    <button class="chip select-plan-btn">Select</button>
+                    <button class="chip view-details-btn" style="background:rgba(185,255,102,0.15);color:#B9FF66;">View Details</button>
+                </div>
+            </div>
+            <div class="plan-card flex flex-col md:flex-row justify-between items-start" data-type="car" data-price="15" data-coverage="50000">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl">🚙</span>
+                        <h4 class="font-semibold">Standard Car Insurance</h4>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-sm mb-1">Coverage: Up to $50,000</p>
+                        <p class="text-sm mb-1">Includes: Accident, Third-party Liability</p>
+                        <p class="font-bold text-lg text-lime-300">$15.00/month</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4 md:mt-0">
+                    <button class="chip select-plan-btn">Select</button>
+                    <button class="chip view-details-btn" style="background:rgba(185,255,102,0.15);color:#B9FF66;">View Details</button>
+                </div>
+            </div>
+            <div class="plan-card flex flex-col md:flex-row justify-between items-start" data-type="health" data-price="35" data-coverage="75000">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl">❤️</span>
+                        <h4 class="font-semibold">Family Health Insurance</h4>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-sm mb-1">Coverage: Up to $75,000</p>
+                        <p class="text-sm mb-1">Includes: Hospitalization, Medications, Checkups</p>
+                        <p class="font-bold text-lg text-lime-300">$35.00/month</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4 md:mt-0">
+                    <button class="chip select-plan-btn">Select</button>
+                    <button class="chip view-details-btn" style="background:rgba(185,255,102,0.15);color:#B9FF66;">View Details</button>
+                </div>
+            </div>
+            <div class="plan-card flex flex-col md:flex-row justify-between items-start" data-type="bike" data-price="10" data-coverage="20000">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl">🏍️</span>
+                        <h4 class="font-semibold">Bike Insurance</h4>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-sm mb-1">Coverage: Up to $20,000</p>
+                        <p class="text-sm mb-1">Includes: Accident, Theft Protection</p>
+                        <p class="font-bold text-lg text-lime-300">$10.00/month</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4 md:mt-0">
+                    <button class="chip select-plan-btn">Select</button>
+                    <button class="chip view-details-btn" style="background:rgba(185,255,102,0.15);color:#B9FF66;">View Details</button>
+                </div>
+            </div>
+            <div class="plan-card flex flex-col md:flex-row justify-between items-start" data-type="home" data-price="45" data-coverage="150000">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-2xl">🏠</span>
+                        <h4 class="font-semibold">Home Insurance</h4>
+                    </div>
+                    <div class="pl-8">
+                        <p class="text-sm mb-1">Coverage: Up to $150,000</p>
+                        <p class="text-sm mb-1">Includes: Property Damage, Theft, Natural Disasters</p>
+                        <p class="font-bold text-lg text-lime-300">$45.00/month</p>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-2 mt-4 md:mt-0">
+                    <button class="chip select-plan-btn">Select</button>
+                    <button class="chip view-details-btn" style="background:rgba(185,255,102,0.15);color:#B9FF66;">View Details</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Plan Details Modal -->
+    <div id="details-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="modal w-11/12 max-w-md max-h-[80vh] overflow-y-auto">
+            <div class="p-5" id="modal-content">
+                <!-- Content will be dynamically inserted here -->
+            </div>
+            <div class="border-t p-4 flex justify-between">
+                <button id="close-modal" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-200 bg-gray-700">Close</button>
+                <button class="bg-gradient-to-r from-purple-400 to-pink-400 text-white px-4 py-2 rounded-lg">Apply Now</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Handle filter chips
+        const chips = document.querySelectorAll('.chip');
+        const planCards = document.querySelectorAll('.plan-card');
+        const sortSelect = document.getElementById('sort-select');
+        const sumInsuredSlider = document.getElementById('sum-insured-slider');
+        const sumInsuredValue = document.getElementById('sum-insured-value');
+        const estimatedPremium = document.getElementById('estimated-premium');
+        const detailsModal = document.getElementById('details-modal');
+        const modalContent = document.getElementById('modal-content');
+        const closeModal = document.getElementById('close-modal');
+        const plansContainer = document.getElementById('plans-container');
+
+        // Filter functionality
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                const filter = chip.getAttribute('data-filter');
+                planCards.forEach(card => {
+                    if (filter === 'all' || card.getAttribute('data-type') === filter) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        });
+        // Sort functionality
+        sortSelect.addEventListener('change', () => {
+            const sortValue = sortSelect.value;
+            const plansArray = Array.from(planCards);
+            plansArray.sort((a, b) => {
+                const aPrice = parseFloat(a.getAttribute('data-price'));
+                const bPrice = parseFloat(b.getAttribute('data-price'));
+                const aCoverage = parseFloat(a.getAttribute('data-coverage'));
+                const bCoverage = parseFloat(b.getAttribute('data-coverage'));
+                if (sortValue === 'price-low') {
+                    return aPrice - bPrice;
+                } else if (sortValue === 'price-high') {
+                    return bPrice - aPrice;
+                } else if (sortValue === 'coverage') {
+                    return bCoverage - aCoverage;
+                }
+                return 0;
+            });
+            plansArray.forEach(plan => {
+                plansContainer.appendChild(plan);
+            });
+        });
+        // Sum insured slider
+        sumInsuredSlider.addEventListener('input', () => {
+            const value = parseInt(sumInsuredSlider.value);
+            sumInsuredValue.textContent = `$${value.toLocaleString()}`;
+            // Update estimated premium based on sum insured
+            const basePremium = 10;
+            const premium = basePremium + (value / 5000);
+            estimatedPremium.textContent = `$${premium.toFixed(2)}`;
+        });
+        // View details buttons
+        document.querySelectorAll('.view-details-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const planCard = e.target.closest('.plan-card');
+                const planType = planCard.getAttribute('data-type');
+                const price = planCard.getAttribute('data-price');
+                const coverage = planCard.getAttribute('data-coverage');
+                const planName = planCard.querySelector('h4').textContent;
+                let features = [];
+                let benefits = [];
+                if (planType === 'car') {
+                    features = ['Comprehensive coverage', '24/7 Roadside assistance', 'Rental car reimbursement'];
+                    benefits = ['No deductible for glass repair', 'New car replacement if less than 1 year old', 'Accident forgiveness after 3 years'];
+                } else if (planType === 'health') {
+                    features = ['Low copays for doctor visits', 'Prescription drug coverage', 'Preventive care included'];
+                    benefits = ['Telehealth services included', 'Fitness membership discounts', 'Mental health coverage'];
+                } else if (planType === 'bike') {
+                    features = ['Theft protection', 'Accident coverage', 'Third-party liability'];
+                    benefits = ['No claim bonus', 'Roadside assistance', 'Coverage for accessories'];
+                } else if (planType === 'home') {
+                    features = ['Property damage coverage', 'Personal liability protection', 'Additional living expenses'];
+                    benefits = ['Replacement cost coverage', 'Identity theft protection', 'Scheduled personal property'];
+                }
+                modalContent.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold">${planName}</h3>
+                        <span class="bg-gradient-to-r from-purple-400 to-pink-400 text-xs font-medium px-2.5 py-0.5 rounded-full">Recommended</span>
+                    </div>
+                    <div class="mb-4">
+                        <p class="text-lg font-bold text-indigo-600">$${price}.00/month</p>
+                        <p class="text-sm text-gray-300">Coverage up to $${parseInt(coverage).toLocaleString()}</p>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-medium mb-2">Key Features</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            ${features.map(feature => `<li class='text-sm'>${feature}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="mb-4">
+                        <h4 class="font-medium mb-2">Benefits</h4>
+                        <ul class="list-disc pl-5 space-y-1">
+                            ${benefits.map(benefit => `<li class='text-sm'>${benefit}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="p-3 glass-effect rounded-lg">
+                        <h4 class="font-medium mb-2">Policy Terms</h4>
+                        <p class="text-sm text-gray-300">This policy has a 12-month term with the option to renew. 30-day money-back guarantee if you're not satisfied.</p>
+                    </div>
+                `;
+                detailsModal.classList.remove('hidden');
+            });
+        });
+        // Close modal
+        closeModal.addEventListener('click', () => {
+            detailsModal.classList.add('hidden');
+        });
+        detailsModal.addEventListener('click', (e) => {
+            if (e.target === detailsModal) {
+                detailsModal.classList.add('hidden');
+            }
+        });
+        // Select plan buttons
+        document.querySelectorAll('.select-plan-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                planCards.forEach(card => card.classList.remove('selected'));
+                const planCard = e.target.closest('.plan-card');
+                planCard.classList.add('selected');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                const price = planCard.getAttribute('data-price');
+                estimatedPremium.textContent = `$${price}.00`;
+            });
+        });
+        // Initialize with "all" filter
+        (function filterPlans(filter) {
+            planCards.forEach(card => {
+                card.style.display = 'flex';
+            });
+        })('all');
+    </script>
+</body>
+</html> 

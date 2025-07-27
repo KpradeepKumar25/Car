@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InsureMax Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            perspective: 1000px;
+            overflow-x: hidden;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-link.active {
+            color: #B9FF66;
+            background: rgba(185, 255, 102, 0.1);
+        }
+
+        .nav-link .nav-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+
+        .nav-link .nav-text {
+            font-size: 14px;
+        }
+
+        .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #9ca3af;
+            font-weight: 500;
+        }
+
+        .mobile-nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav-link.active {
+            color: #B9FF66;
+            background: rgba(185, 255, 102, 0.1);
+        }
+
+        .mobile-nav-link .nav-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+
+        .mobile-nav-link .nav-text {
+            font-size: 14px;
+        }
+
+        .scene-3d {
+            transform-style: preserve-3d;
+            perspective: 1200px;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+        }
+
+        .gradient-card {
+            background: linear-gradient(135deg, #9575CD 0%, #7E57C2 100%);
+            box-shadow: 
+                0 20px 40px rgba(149, 117, 205, 0.4),
+                0 8px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform-style: preserve-3d;
+            position: relative;
+        }
+
+        .gradient-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .gradient-card.green {
+            background: linear-gradient(135deg, #A5D6A7 0%, #81C784 100%);
+            box-shadow: 
+                0 20px 40px rgba(165, 214, 167, 0.4),
+                0 8px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .quick-action {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(20px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform-style: preserve-3d;
+            position: relative;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .quick-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .quick-action:hover {
+            transform: translateY(-8px) rotateX(5deg) rotateY(5deg) scale(1.05);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 12px 24px rgba(185, 255, 102, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .quick-action:hover::before {
+            opacity: 1;
+        }
+
+        .policy-card {
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .policy-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .policy-card:hover::after {
+            left: 100%;
+        }
+
+        .policy-card:hover {
+            transform: translateY(-12px) rotateX(8deg) rotateY(-2deg) scale(1.02);
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                0 15px 30px rgba(149, 117, 205, 0.3);
+        }
+
+        .policy-card.green:hover {
+            box-shadow: 
+                0 30px 60px rgba(0, 0, 0, 0.4),
+                0 15px 30px rgba(165, 214, 167, 0.3);
+        }
+
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .card-3d:hover {
+            transform: rotateY(5deg) rotateX(5deg) translateZ(20px);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .bottom-nav {
+            background: rgba(31, 31, 31, 0.9);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            margin: 0 4px;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item.active {
+            background: rgba(185, 255, 102, 0.2);
+            color: #B9FF66;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-text {
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 24px 0;
+            perspective: 1000px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform-style: preserve-3d;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(185, 255, 102, 0.1) 0%, transparent 50%);
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) rotateX(10deg) rotateY(5deg) scale(1.05);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 8px 16px rgba(185, 255, 102, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #B9FF66;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .recent-activity {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 24px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(185, 255, 102, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #B9FF66;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .floating {
+            animation: floating 4s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+            33% { transform: translateY(-8px) rotateX(2deg) rotateY(1deg); }
+            66% { transform: translateY(-4px) rotateX(-1deg) rotateY(-1deg); }
+            100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+        }
+
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+
+        .parallax-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #B9FF66, #9575CD);
+            animation: parallaxFloat 8s ease-in-out infinite;
+        }
+
+        .parallax-shape:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .parallax-shape:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-delay: -2s;
+        }
+
+        .parallax-shape:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            bottom: 30%;
+            left: 20%;
+            animation-delay: -4s;
+        }
+
+        @keyframes parallaxFloat {
+            0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+            50% { transform: translateY(-20px) rotateZ(180deg); }
+        }
+
+        .header-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .header-3d:hover {
+            transform: translateZ(10px);
+        }
+
+        .profile-3d {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .profile-3d:hover {
+            transform: rotateY(5deg) translateZ(5px);
+        }
+
+        .notification-3d {
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
+        }
+
+        .notification-3d:hover {
+            transform: rotateX(10deg) rotateY(-5deg) translateZ(10px);
+        }
+
+        /* Utility classes for layout and spacing */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .mt-8 { margin-top: 2rem; }
+        .mt-16 { margin-top: 4rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
+        .items-center { align-items: center; }
+        .flex-col { flex-direction: column; }
+        .space-x-3 > * + * { margin-left: 0.75rem; }
+        .space-x-8 > * + * { margin-left: 2rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .gap-8 { gap: 2rem; }
+        .w-10 { width: 2.5rem; }
+        .h-10 { height: 2.5rem; }
+        .w-8 { width: 2rem; }
+        .h-8 { height: 2rem; }
+        .w-24 { width: 6rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-xl { border-radius: 0.75rem; }
+        .rounded-2xl { border-radius: 1rem; }
+        .rounded-full { border-radius: 9999px; }
+        .text-center { text-align: center; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .bg-gradient-to-r { background-image: linear-gradient(to right, var(--tw-gradient-stops)); }
+        .from-purple-400 { --tw-gradient-from: #a78bfa; }
+        .to-pink-400 { --tw-gradient-to: #f472b6; }
+        .from-white { --tw-gradient-from: #fff; }
+        .to-gray-300 { --tw-gradient-to: #d1d5db; }
+        .bg-clip-text { -webkit-background-clip: text; background-clip: text; }
+        .text-transparent { color: transparent; }
+        .bg-black { background-color: #000; }
+        .bg-opacity-30 { --tw-bg-opacity: 0.3; }
+        .bg-opacity-50 { --tw-bg-opacity: 0.5; }
+        .bg-opacity-70 { --tw-bg-opacity: 0.7; }
+        .hover\:bg-opacity-50:hover { --tw-bg-opacity: 0.5; }
+        .hover\:bg-opacity-70:hover { --tw-bg-opacity: 0.7; }
+        .transition-all { transition-property: all; }
+        .transition-colors { transition-property: background-color, border-color, color, fill, stroke; }
+        .duration-500 { transition-duration: 500ms; }
+        .ease-in-out { transition-timing-function: ease-in-out; }
+        .backdrop-blur-sm { backdrop-filter: blur(4px); }
+        .backdrop-blur-lg { backdrop-filter: blur(16px); }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
+        .border-t { border-top-width: 1px; }
+        .border-b { border-bottom-width: 1px; }
+        .border-gray-700 { --tw-border-opacity: 1; border-color: rgb(55 65 81 / var(--tw-border-opacity)); }
+        .border-opacity-50 { --tw-border-opacity: 0.5; }
+        .hidden { display: none; }
+        .sticky { position: sticky; }
+        .top-0 { top: 0; }
+        .top-16 { top: 4rem; }
+        .right-4 { right: 1rem; }
+        .z-40 { z-index: 40; }
+        .z-50 { z-index: 50; }
+        .fixed { position: fixed; }
+        .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+        .ml-2 { margin-left: 0.5rem; }
+        .ml-3 { margin-left: 0.75rem; }
+        .ml-4 { margin-left: 1rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mt-1 { margin-top: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .my-8 { margin-top: 2rem; margin-bottom: 2rem; }
+        .p-2 { padding: 0.5rem; }
+        .p-3 { padding: 0.75rem; }
+        .p-4 { padding: 1rem; }
+        .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+        .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .rounded-full { border-radius: 9999px; }
+        .text-white { color: #fff; }
+        .text-gray-300 { color: #d1d5db; }
+        .text-gray-400 { color: #9ca3af; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .w-80 { width: 20rem; }
+        .mx-4 { margin-left: 1rem; margin-right: 1rem; }
+        .w-full { width: 100%; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .bg-red-600 { background-color: #dc2626; }
+        .hover\:bg-red-700:hover { background-color: #b91c1c; }
+        .bg-orange-600 { background-color: #ea580c; }
+        .hover\:bg-orange-700:hover { background-color: #c2410c; }
+        .bg-blue-600 { background-color: #2563eb; }
+        .hover\:bg-blue-700:hover { background-color: #1d4ed8; }
+        .bg-gray-600 { background-color: #4b5563; }
+        .hover\:bg-gray-700:hover { background-color: #374151; }
+        .bg-purple-600 { background-color: #7c3aed; }
+        .hover\:bg-purple-700:hover { background-color: #6d28d9; }
+        .bg-green-600 { background-color: #16a34a; }
+        .hover\:bg-green-700:hover { background-color: #15803d; }
+        .bg-green-900 { background-color: #14532d; }
+        .bg-opacity-50 { --tw-bg-opacity: 0.5; }
+        .border-green-500 { border-color: #22c55e; }
+        .text-green-300 { color: #86efac; }
+        .text-green-400 { color: #4ade80; }
+        .font-medium { font-weight: 500; }
+        .flex-1 { flex: 1; }
+        .cursor-pointer { cursor: pointer; }
+        .grid { display: grid; }
+        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+        .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .md\:flex { display: flex; }
+        .md\:hidden { display: none; }
+        .transform { transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y)); }
+        .translate-x-full { transform: translateX(100%); }
+        .translate-y-0 { transform: translateY(0px); }
+        .translate-y-8 { transform: translateY(2rem); }
+        .translate-y-12 { transform: translateY(3rem); }
+        .rotate-x-5 { transform: rotateX(5deg); }
+        .rotate-y-5 { transform: rotateY(5deg); }
+        .scale-1 { transform: scale(1); }
+        .scale-1-05 { transform: scale(1.05); }
+        .scale-0-9 { transform: scale(0.9); }
+        .scale-0-8 { transform: scale(0.8); }
+        .translateY-0 { transform: translateY(0); }
+        .translateY-30 { transform: translateY(30px); }
+        .translateY-50 { transform: translateY(50px); }
+        .rotateY-20 { transform: rotateY(20deg); }
+        .rotateX-20 { transform: rotateX(20deg); }
+        .translateZ-10 { transform: translateZ(10px); }
+        .translateZ-20 { transform: translateZ(20px); }
+        .opacity-0 { opacity: 0; }
+        .opacity-1 { opacity: 1; }
+    </style>
+</head>
+<body>
+    <!-- Parallax Background Shapes -->
+    <div class="parallax-bg">
+        <div class="parallax-shape"></div>
+        <div class="parallax-shape"></div>
+        <div class="parallax-shape"></div>
+    </div>
+
+    <!-- Website Header with Navigation -->
+    <header class="glass-effect border-b border-gray-700 border-opacity-50 sticky top-0 z-40 header-3d">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <!-- Logo/Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                        🛡️
+                    </div>
+                    <div class="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                        InsureMax
+                    </div>
+                </div>
+                <!-- Main Navigation -->
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#" class="nav-link active" onclick="setActiveTab(this, 'home')">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Home</span>
+                    </a>
+                    <a href="policies.html" class="nav-link" id="policiesNav">Policies</a>
+                    <a href="insurance.html" class="nav-link" id="insuranceNav">Insurance Claim</a>
+                    <a href="#" class="nav-link" onclick="setActiveTab(this, 'profile')">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">Profile</span>
+                    </a>
+                </nav>
+
+                <!-- User Profile & Notifications -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative cursor-pointer notification-3d" onclick="toggleNotifications()">
+                        <div class="w-10 h-10 rounded-full bg-gray-800 bg-opacity-50 flex items-center justify-center hover:bg-gray-700 hover:bg-opacity-70 transition-all shadow-lg backdrop-blur-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                        </div>
+                        <div class="notification-badge pulse">3</div>
+                    </div>
+                    
+                    <div class="profile flex items-center profile-3d cursor-pointer hover:bg-white hover:bg-opacity-5 rounded-lg p-2 transition-all">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                            JD
+                        </div>
+                        <div class="profile-details ml-3 hidden sm:block">
+                            <div class="font-semibold text-sm">John Doe</div>
+                            <small class="text-gray-400 text-xs">📍 New Jersey</small>
+                        </div>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2 text-gray-400 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden w-10 h-10 rounded-lg bg-gray-800 bg-opacity-50 flex items-center justify-center" onclick="toggleMobileMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div id="mobileMenu" class="md:hidden bg-gray-900 bg-opacity-95 backdrop-blur-lg border-t border-gray-700 border-opacity-50 hidden">
+            <div class="container mx-auto px-4 py-4">
+                <nav class="flex flex-col space-y-4">
+                    <a href="#" class="mobile-nav-link active" onclick="setActiveTab(this, 'home')">
+                        <span class="nav-icon">🏠</span>
+                        <span class="nav-text">Home</span>
+                    </a>
+                    <a href="policies.html" class="mobile-nav-link" onclick="setActiveTab(this, 'policy')">
+                        <span class="nav-icon">📋</span>
+                        <span class="nav-text">Policies</span>
+                    </a>
+                    <a href="insurance.html" class="mobile-nav-link" onclick="setActiveTab(this, 'insurance')">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">Insurance Claim</span>
+                    </a>
+                    <a href="#" class="mobile-nav-link" onclick="setActiveTab(this, 'profile')">
+                        <span class="nav-icon">👤</span>
+                        <span class="nav-text">Profile</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Welcome Section -->
+    <section class="container mx-auto px-4 py-8">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold mb-4 text-white">Good Morning, John! 👋</h1>
+            <p class="text-lg font-semibold text-white">What can we help you with today?</p>
+        </div>
+    </section>
+
+    <div class="container mx-auto px-4">
+        <div class="stats-grid">
+            <div class="stat-card card-3d">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Active Policies</div>
+            </div>
+            <div class="stat-card card-3d">
+                <div class="stat-number">$30K</div>
+                <div class="stat-label">Total Coverage</div>
+            </div>
+        </div>
+
+        <div class="quick-actions flex justify-around mt-6 perspective-1000">
+            <div class="quick-action w-24 p-4 rounded-2xl text-center text-white font-semibold cursor-pointer" onclick="showClaimFlow()">
+                <div class="text-3xl mb-2">🚗</div>
+                <div class="text-sm font-semibold">File a Claim</div>
+            </div>
+            <div class="quick-action w-24 p-4 rounded-2xl text-center text-white font-semibold cursor-pointer" onclick="showQuoteFlow()">
+                <div class="text-3xl mb-2">📋</div>
+                <div class="text-sm font-semibold">Get a Quote</div>
+            </div>
+            <div class="quick-action w-24 p-4 rounded-2xl text-center text-white font-semibold cursor-pointer" onclick="showRenewalFlow()">
+                <div class="text-3xl mb-2">🔄</div>
+                <div class="text-sm font-semibold">Renew Policy</div>
+            </div>
+        </div>
+
+        <div class="recent-activity glass-effect card-3d">
+            <h3 class="text-lg font-semibold mb-4">Recent Activity</h3>
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="font-medium">Premium Payment Received</div>
+                    <div class="text-sm text-gray-400">Car Insurance - $1,250</div>
+                </div>
+                <div class="text-sm text-gray-400">2 days ago</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <div class="font-medium">Policy Renewed</div>
+                    <div class="text-sm text-gray-400">Home Insurance - Extended for 1 year</div>
+                </div>
+                <div class="text-sm text-gray-400">1 week ago</div>
+            </div>
+        </div>
+
+        <div class="section-header flex justify-between items-center my-8">
+            <h4 class="text-xl font-semibold">My Policies</h4>
+            <span class="text-gray-400 cursor-pointer hover:text-white transition-colors">See all →</span>
+        </div>
+
+        <div class="policy-card gradient-card rounded-2xl p-6 mb-4 floating">
+            <div class="policy-card-header flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        🚗
+                    </div>
+                    <strong class="text-lg">Car Insurance</strong>
+                </div>
+                <div class="status bg-black bg-opacity-30 px-3 py-1 rounded-full text-xs font-medium">
+                    Active
+                </div>
+            </div>
+            <small class="text-white text-opacity-80">Policy #: MA7 MFCD2CCD 9712471</small>
+            <h4 class="text-sm text-white text-opacity-80 mt-4 mb-1">Cover Amount</h4>
+            <strong class="text-2xl font-bold">$15,000</strong>
+            <div class="policy-details flex justify-between items-end mt-6">
+                <div>
+                    <small class="text-white text-opacity-80">Premium</small>
+                    <div class="font-bold text-lg">$1,250/mo</div>
+                </div>
+                <div>
+                    <small class="text-white text-opacity-80">Due On</small>
+                    <div class="font-bold">20 Jun 2025</div>
+                </div>
+                <button class="bg-black bg-opacity-30 hover:bg-opacity-50 text-white px-4 py-2 rounded-lg transition-all font-medium" onclick="renewPolicy('car')">
+                    Renew Policy
+                </button>
+            </div>
+        </div>
+
+        <div class="policy-card gradient-card green rounded-2xl p-6 mb-4">
+            <div class="policy-card-header flex justify-between items-center mb-4">
+                <div class="flex items-center">
+                    <div class="w-8 h-8 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-3">
+                        🏠
+                    </div>
+                    <strong class="text-lg">Home Insurance</strong>
+                </div>
+                <div class="status bg-black bg-opacity-30 px-3 py-1 rounded-full text-xs font-medium">
+                    Active
+                </div>
+            </div>
+            <small class="text-white text-opacity-80">Policy #: HM9 XFCD8CCD 1234567</small>
+            <h4 class="text-sm text-white text-opacity-80 mt-4 mb-1">Cover Amount</h4>
+            <strong class="text-2xl font-bold">$15,000</strong>
+            <div class="policy-details flex justify-between items-end mt-6">
+                <div>
+                    <small class="text-white text-opacity-80">Premium</small>
+                    <div class="font-bold text-lg">$850/mo</div>
+                </div>
+                <div>
+                    <small class="text-white text-opacity-80">Due On</small>
+                    <div class="font-bold">15 Jul 2025</div>
+                </div>
+                <button class="bg-black bg-opacity-30 hover:bg-opacity-50 text-white px-4 py-2 rounded-lg transition-all font-medium" onclick="renewPolicy('home')">
+                    Renew Policy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-effect border-t border-gray-700 border-opacity-50 mt-16">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-400 to-pink-400 flex items-center justify-center text-white font-bold">
+                            🛡️
+                        </div>
+                        <div class="text-lg font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                            InsureMax
+                        </div>
+                    </div>
+                    <p class="text-gray-400 text-sm">Your trusted insurance partner for comprehensive coverage and peace of mind.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Get a Quote</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">File a Claim</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Renew Policy</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Contact Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Insurance Types</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Auto Insurance</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Home Insurance</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Life Insurance</a></li>
+                        <li><a href="#" class="font-bold text-white hover:text-lime-300 transition-colors">Business Insurance</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold mb-4">Contact Info</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li>📞 1-800-INSURE-MAX</li>
+                        <li>📧 support@insuremax.com</li>
+                        <li>📍 123 Insurance Ave, NJ</li>
+                        <li>🕒 24/7 Customer Support</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 border-opacity-50 mt-8 pt-8 text-center text-sm text-gray-400">
+                <p>&copy; 2024 InsureMax. All rights reserved. | Privacy Policy | Terms of Service</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Notification Panel -->
+    <div id="notificationPanel" class="fixed top-16 right-4 w-80 glass-effect rounded-2xl p-4 shadow-2xl transform translate-x-full transition-all duration-500 z-50 card-3d">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="font-semibold text-lg">Notifications</h3>
+            <button onclick="toggleNotifications()" class="text-gray-400 hover:text-white transition-colors" aria-label="Close notifications" style="font-size: 1.5rem; font-weight: bold;">
+                &times;
+            </button>
+        </div>
+        <div class="space-y-3">
+            <div class="bg-gray-700 bg-opacity-50 rounded-lg p-3 backdrop-blur-sm border border-gray-600 border-opacity-30 hover:bg-opacity-70 transition-all cursor-pointer">
+                <div class="font-medium text-sm">Payment Reminder</div>
+                <div class="text-xs text-gray-300 mt-1">Car insurance premium due in 5 days</div>
+            </div>
+            <div class="bg-gray-700 bg-opacity-50 rounded-lg p-3 backdrop-blur-sm border border-gray-600 border-opacity-30 hover:bg-opacity-70 transition-all cursor-pointer">
+                <div class="font-medium text-sm">Policy Update</div>
+                <div class="text-xs text-gray-300 mt-1">Your home insurance policy has been updated</div>
+            </div>
+            <div class="bg-gray-700 bg-opacity-50 rounded-lg p-3 backdrop-blur-sm border border-gray-600 border-opacity-30 hover:bg-opacity-70 transition-all cursor-pointer">
+                <div class="font-medium text-sm">Claim Approved</div>
+                <div class="text-xs text-gray-300 mt-1">Your recent claim has been approved for processing</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function setActiveTab(element, tabName) {
+            // Remove active class from all nav items (both desktop and mobile)
+            document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            element.classList.add('active');
+            
+            // Also update the corresponding nav item in the other menu
+            const otherNavItems = document.querySelectorAll(`[onclick*="${tabName}"]`);
+            otherNavItems.forEach(item => {
+                if (item !== element) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Close mobile menu if open
+            const mobileMenu = document.getElementById('mobileMenu');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
+        }
+
+        function toggleNotifications() {
+            const panel = document.getElementById('notificationPanel');
+            panel.classList.toggle('translate-x-full');
+        }
+
+        function showClaimFlow() {
+            // Create a modal for claim filing
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-2xl p-6 w-80 mx-4">
+                    <h3 class="text-xl font-bold mb-4">File a Claim</h3>
+                    <div class="space-y-4">
+                        <button class="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Car accident claim initiated'); closeModal()">
+                            🚗 Car Accident
+                        </button>
+                        <button class="w-full bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Property damage claim initiated'); closeModal()">
+                            🏠 Property Damage
+                        </button>
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Theft claim initiated'); closeModal()">
+                            🔒 Theft
+                        </button>
+                        <button class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg transition-colors" onclick="closeModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showQuoteFlow() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-2xl p-6 w-80 mx-4">
+                    <h3 class="text-xl font-bold mb-4">Get a Quote</h3>
+                    <div class="space-y-4">
+                        <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Car insurance quote requested'); closeModal()">
+                            🚗 Car Insurance
+                        </button>
+                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Home insurance quote requested'); closeModal()">
+                            🏠 Home Insurance
+                        </button>
+                        <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition-colors" onclick="alert('Life insurance quote requested'); closeModal()">
+                            ❤️ Life Insurance
+                        </button>
+                        <button class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg transition-colors" onclick="closeModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function showRenewalFlow() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-8 rounded-2xl p-6 w-80 mx-4">
+                    <h3 class="text-xl font-bold mb-4">Renew Policy</h3>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">Car Insurance</div>
+                                    <div class="text-sm text-gray-300">Due: Jun 20, 2025</div>
+                                </div>
+                                <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm transition-colors" onclick="alert('Car insurance renewed!'); closeModal()">
+                                    Renew
+                                </button>
+                            </div>
+                        </div>
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-medium">Home Insurance</div>
+                                    <div class="text-sm text-gray-300">Due: Jul 15, 2025</div>
+                                </div>
+                                <button class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg text-sm transition-colors" onclick="alert('Home insurance renewed!'); closeModal()">
+                                    Renew
+                                </button>
+                            </div>
+                        </div>
+                        <button class="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded-lg transition-colors" onclick="closeModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function renewPolicy(type) {
+            const policyName = type === 'car' ? 'Car Insurance' : 'Home Insurance';
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            modal.innerHTML = `
+                <div class="bg-gray-800 rounded-2xl p-6 w-80 mx-4">
+                    <h3 class="text-xl font-bold mb-4">Renew ${policyName}</h3>
+                    <div class="space-y-4">
+                        <div class="bg-gray-700 rounded-lg p-4">
+                            <div class="text-sm text-gray-300 mb-2">Current Premium</div>
+                            <div class="text-2xl font-bold">${type === 'car' ? '$1,250' : '$850'}/mo</div>
+                        </div>
+                        <div class="bg-green-900 bg-opacity-50 border border-green-500 rounded-lg p-4">
+                            <div class="text-sm text-green-300 mb-2">Renewal Discount Available!</div>
+                            <div class="text-xl font-bold text-green-400">${type === 'car' ? '$1,125' : '$765'}/mo</div>
+                            <div class="text-xs text-green-300">Save 10% for early renewal</div>
+                        </div>
+                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg transition-colors font-medium" onclick="alert('${policyName} renewed successfully with discount!'); closeModal()">
+                            Renew with Discount
+                        </button>
+                        <button class="w-full bg-gray-6 hover:bg-gray-700 text-white py-2 rounded-lg transition-colors" onclick="closeModal()">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        function closeModal() {
+            const modals = document.querySelectorAll('.fixed.inset-0');
+            modals.forEach(modal => {
+                if (modal.classList.contains('z-50')) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Close notification panel when clicking outside
+        document.addEventListener('click', function(event) {
+            const panel = document.getElementById('notificationPanel');
+            const bellIcon = event.target.closest('[onclick="toggleNotifications()"]');
+            
+            if (!panel.contains(event.target) && !bellIcon && !panel.classList.contains('translate-x-full')) {
+                panel.classList.add('translate-x-full');
+            }
+        });
+
+        // Add mouse movement parallax effect
+        document.addEventListener('mousemove', function(e) {
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            // Parallax effect for background shapes
+            const shapes = document.querySelectorAll('.parallax-shape');
+            shapes.forEach((shape, index) => {
+                const speed = (index + 1) * 0.5;
+                const x = (mouseX - 0.5) * speed * 20;
+                const y = (mouseY - 0.5) * speed * 20;
+                shape.style.transform = `translate(${x}px, ${y}px) rotateZ(${x}deg)`;
+            });
+            
+            // 3D tilt effect for cards
+            const cards = document.querySelectorAll('.card-3d');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardCenterX = rect.left + rect.width / 2;
+                const cardCenterY = rect.top + rect.height / 2;
+                
+                const angleX = (e.clientY - cardCenterY) / 30;
+                const angleY = (cardCenterX - e.clientX) / 30;
+                
+                if (card.matches(':hover')) {
+                    card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateZ(10px)`;
+                }
+            });
+        });
+
+        // Reset card transforms when mouse leaves
+        document.addEventListener('mouseleave', function() {
+            const cards = document.querySelectorAll('.card-3d');
+            cards.forEach(card => {
+                card.style.transform = '';
+            });
+        });
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate policy cards on load with 3D effect
+            const policyCards = document.querySelectorAll('.policy-card');
+            policyCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(50px) rotateX(20deg) scale(0.9)';
+                    card.style.transition = 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0) rotateX(0deg) scale(1)';
+                    }, 100);
+                }, index * 300);
+            });
+
+            // Animate stats cards
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px) rotateY(20deg)';
+                    card.style.transition = 'all 0.6s ease';
+                    
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0) rotateY(0deg)';
+                    }, 100);
+                }, index * 200);
+            });
+
+            // Animate quick actions
+            const quickActions = document.querySelectorAll('.quick-action');
+            quickActions.forEach((action, index) => {
+                setTimeout(() => {
+                    action.style.opacity = '0';
+                    action.style.transform = 'translateY(20px) scale(0.8)';
+                    action.style.transition = 'all 0.5s ease';
+                    
+                    setTimeout(() => {
+                        action.style.opacity = '1';
+                        action.style.transform = 'translateY(0) scale(1)';
+                    }, 100);
+                }, index * 150);
+            });
+        });
+
+        document.getElementById('policiesNav').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = 0;
+            setTimeout(function() {
+                window.location.href = 'policies.html';
+            }, 500);
+        });
+        // Fade-out for Insurance Claim nav
+        document.getElementById('insuranceNav').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.body.style.transition = 'opacity 0.5s';
+            document.body.style.opacity = 0;
+            setTimeout(function() {
+                window.location.href = 'insurance.html';
+            }, 500);
+        });
+    </script>
+</body>
+</html>

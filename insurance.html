@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance Claim - InsureMax</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            perspective: 1000px;
+            overflow-x: hidden;
+        }
+        .container.relative {
+            position: relative;
+            width: 100vw;
+            min-height: 100vh;
+            max-width: 100vw;
+            overflow: visible;
+        }
+        .screen {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.4,0,0.2,1), transform 0.5s cubic-bezier(0.4,0,0.2,1);
+            background: rgba(10,10,30,0.85);
+            backdrop-filter: blur(2px);
+            overflow-y: auto;
+        }
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 20;
+            transform: translateX(0);
+        }
+        .screen.slide-in {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 20;
+            transform: translateX(0);
+            animation: slideIn 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .screen.slide-out {
+            opacity: 0;
+            pointer-events: none;
+            z-index: 10;
+            transform: translateX(-40px);
+            animation: slideOut 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(-40px); }
+        }
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.12;
+        }
+        .parallax-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #B9FF66, #9575CD);
+            animation: parallaxFloat 8s ease-in-out infinite;
+        }
+        .parallax-shape:nth-child(1) {
+            width: 100px; height: 100px; top: 20%; left: 10%; animation-delay: 0s;
+        }
+        .parallax-shape:nth-child(2) {
+            width: 150px; height: 150px; top: 60%; right: 15%; animation-delay: -2s;
+        }
+        .parallax-shape:nth-child(3) {
+            width: 80px; height: 80px; bottom: 30%; left: 20%; animation-delay: -4s;
+        }
+        @keyframes parallaxFloat {
+            0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+            50% { transform: translateY(-20px) rotateZ(180deg); }
+        }
+        .glass-effect {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform-style: preserve-3d;
+        }
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.6s;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2), 0 1.5px 3px rgba(185,255,102,0.08);
+        }
+        .card-3d:hover {
+            transform: rotateY(5deg) rotateX(5deg) translateZ(20px) scale(1.03);
+            box-shadow: 0 20px 40px rgba(185,255,102,0.18), 0 8px 16px rgba(0,0,0,0.3);
+        }
+        .gradient-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            padding: 1.5rem 0;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .step-card {
+            width: 100%;
+            max-width: 480px;
+            margin: 5vh auto 5vh auto;
+            padding: 2.5rem 2rem 2rem 2rem;
+            border-radius: 1.5rem;
+            min-width: 320px;
+            box-shadow: 0 20px 40px rgba(149, 117, 205, 0.18), 0 8px 16px rgba(0,0,0,0.3);
+            background: rgba(255,255,255,0.10);
+            position: relative;
+            transition: box-shadow 0.4s, transform 0.4s;
+        }
+        .step-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(79,70,229,0.08);
+        }
+        .step-desc {
+            color: #d1d5db;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        .progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.12);
+            border-radius: 2px;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #B9FF66 0%, #7c3aed 100%);
+            transition: width 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+        }
+        .upload-box {
+            border: 2px dashed #7c3aed;
+            background: rgba(255,255,255,0.06);
+            border-radius: 1rem;
+            padding: 2rem 1rem;
+            text-align: center;
+            color: #b9ff66;
+            cursor: pointer;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s;
+        }
+        .upload-box.dragover {
+            border-color: #B9FF66;
+            background: rgba(185,255,102,0.08);
+        }
+        .upload-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .upload-preview img, .upload-preview .file-icon {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 0.75rem;
+            background: #23234a;
+            border: 1px solid #7c3aed;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        .upload-preview .file-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #7c3aed;
+        }
+        .car-damage-area {
+            position: relative;
+            width: 300px;
+            height: 500px;
+            margin: 0 auto;
+        }
+        .damage-marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #B9FF66 0%, #7c3aed 100%);
+            color: #23234a;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1rem;
+            box-shadow: 0 0 0 2px #fff;
+            border: 2px solid #fff;
+        }
+        .damage-marker.selected {
+            background: #FF6B6B;
+            color: #fff;
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        .damage-area[fill]:not([fill='transparent']) {
+            stroke: #B9FF66;
+            stroke-width: 3;
+        }
+        .selected-area-tag {
+            background: linear-gradient(90deg, #B9FF66 0%, #7c3aed 100%);
+            color: #23234a;
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(185,255,102,0.08);
+        }
+        .claim-form input, .claim-form textarea, .claim-form select {
+            width: 100%;
+            padding: 0.95rem 1.1rem;
+            border-radius: 0.75rem;
+            border: 1.5px solid #7c3aed;
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 1.2rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .claim-form input:focus, .claim-form textarea:focus, .claim-form select:focus {
+            border-color: #B9FF66;
+        }
+        .damage-value-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1.5px solid #7c3aed;
+            color: #fff;
+            border-radius: 0.75rem;
+            padding: 0.95rem 1.1rem;
+            font-size: 1.1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: background 0.3s, border-color 0.3s, color 0.3s;
+        }
+        .damage-value-btn.selected {
+            background: linear-gradient(90deg, #B9FF66 0%, #7c3aed 100%);
+            color: #23234a;
+            border-color: #B9FF66;
+        }
+        .main-btn {
+            background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 0.75rem;
+            padding: 1rem 0;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 16px 0 rgba(79,70,229,0.15);
+            cursor: pointer;
+            transition: opacity 0.2s, box-shadow 0.2s, transform 0.2s;
+            width: 100%;
+        }
+        .main-btn:hover {
+            opacity: 0.92;
+            box-shadow: 0 8px 32px 0 rgba(185,255,102,0.12);
+            transform: translateY(-2px) scale(1.03);
+        }
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 2rem auto;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 2;
+            stroke: #4bb71b;
+            stroke-miterlimit: 10;
+            box-shadow: inset 0px 0px 0px #4bb71b;
+            animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+        }
+        .success-checkmark .check-icon {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border-radius: 50%;
+            box-sizing: content-box;
+            margin: 0 auto;
+        }
+        .success-checkmark .check-icon .icon-line {
+            height: 5px;
+            background-color: #4bb71b;
+            display: block;
+            border-radius: 2px;
+            position: absolute;
+            z-index: 10;
+        }
+        .success-checkmark .check-icon .icon-line.line-tip {
+            top: 46px;
+            left: 14px;
+            width: 25px;
+            transform: rotate(45deg);
+            animation: icon-line-tip 0.75s;
+        }
+        .success-checkmark .check-icon .icon-line.line-long {
+            top: 38px;
+            right: 8px;
+            width: 47px;
+            transform: rotate(-45deg);
+            animation: icon-line-long 0.75s;
+        }
+        .success-checkmark .check-icon .icon-circle {
+            top: -4px;
+            left: -4px;
+            z-index: 10;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            box-sizing: content-box;
+            border: 4px solid #4bb71b;
+        }
+        .success-checkmark .check-icon .icon-fix {
+            top: 8px;
+            width: 5px;
+            left: 26px;
+            z-index: 1;
+            height: 85px;
+            position: absolute;
+            transform: rotate(-45deg);
+            background-color: white;
+        }
+        @keyframes icon-line-tip {
+            0% { width: 0; left: 1px; top: 19px; }
+            54% { width: 0; left: 1px; top: 19px; }
+            70% { width: 50px; left: -8px; top: 37px; }
+            84% { width: 17px; left: 21px; top: 48px; }
+            100% { width: 25px; left: 14px; top: 45px; }
+        }
+        @keyframes icon-line-long {
+            0% { width: 0; right: 46px; top: 54px; }
+            65% { width: 0; right: 46px; top: 54px; }
+            84% { width: 55px; right: 0px; top: 35px; }
+            100% { width: 47px; right: 8px; top: 38px; }
+        }
+        @keyframes fill {
+            100% { box-shadow: inset 0px 0px 0px 30px #4bb71b; }
+        }
+        @keyframes scale {
+            0%, 100% { transform: none; }
+            50% { transform: scale3d(1.1, 1.1, 1); }
+        }
+        @media (max-width: 600px) {
+            .container { max-width: 100vw; }
+            .container.relative { min-width: 100vw; min-height: 100vh; }
+            .step-card { min-width: 0; max-width: 98vw; padding: 1.2rem 0.5rem; margin: 3vh auto 3vh auto; }
+            .car-damage-area { width: 100vw; height: 60vw; max-width: 100vw; max-height: 80vw; }
+        }
+        .results-text {
+            width: 100%;
+            text-align: left;
+            padding: 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .results-text h3 {
+            margin-bottom: 0.5rem;
+            color: #B9FF66;
+        }
+        .results-text p {
+            margin: 0.5rem 0;
+            color: #d1d5db;
+        }
+        .inspection-results-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 1rem auto;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.08);
+            border-radius: 1rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+        .inspection-canvas {
+            width: 100% !important;
+            max-height: 600px !important;
+            border-radius: 1rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+            background: #222;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="parallax-bg">
+        <div class="parallax-shape"></div>
+        <div class="parallax-shape"></div>
+        <div class="parallax-shape"></div>
+    </div>
+    <!-- Minimal top icon/logo for all screens -->
+    <div style="position:fixed;top:2.5vh;left:0;width:100vw;z-index:30;display:flex;justify-content:center;pointer-events:none;">
+      <div style="background:rgba(255,255,255,0.10);backdrop-filter:blur(8px);border-radius:1.5rem;padding:0.5rem 1.5rem;box-shadow:0 2px 12px 0 rgba(79,70,229,0.10);display:flex;align-items:center;gap:0.75rem;">
+        <span style="font-size:2rem;line-height:1;">🚗</span>
+        <span style="font-weight:600;font-size:1.15rem;letter-spacing:-1px;color:#fff;opacity:0.85;">QuickClaim</span>
+      </div>
+    </div>
+    <div class="container relative">
+        <!-- SCREEN 1: Welcome Screen -->
+        <div id="screen1" class="screen active">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="w-20 h-20 mb-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                </div>
+                <h1 class="step-title">Quick Claim</h1>
+                <p class="step-desc">File your insurance claim in minutes with our easy step-by-step process</p>
+                <button onclick="nextScreen()" class="main-btn">
+                    Start New Claim
+                </button>
+            </div>
+        </div>
+        <!-- SCREEN 2: Photo Upload -->
+        <div id="screen2" class="screen">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="progress-bar mb-6"><div class="progress-fill" style="width: 20%"></div></div>
+                <h2 class="step-title mb-2">Upload Damage Photos</h2>
+                <p class="step-desc mb-4">Upload clear photos of the damaged areas. You can select from your computer or drive.</p>
+                <div id="upload-box" class="upload-box">
+                    <input type="file" id="photo-upload" accept="image/*,.pdf" multiple style="display:none">
+                    <span id="upload-text">Click or drag files here to upload</span>
+                </div>
+                <div class="upload-preview" id="upload-preview"></div>
+                <button onclick="goToPreviewScreen()" class="main-btn mt-4">
+                    Continue
+                </button>
+            </div>
+        </div>
+        <!-- SCREEN 3: Preview Uploaded Photos -->
+        <div id="screen3" class="screen">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="progress-bar mb-6"><div class="progress-fill" style="width: 40%"></div></div>
+                <h2 class="step-title mb-2">Preview Uploaded Photos</h2>
+                <p class="step-desc mb-4">Review your uploaded photos. When ready, click Inspect to analyze damage and car model.</p>
+                <div class="upload-preview" id="preview-photos"></div>
+                <button onclick="goToInspectionScreen()" class="main-btn mt-4">
+                    Inspect
+                </button>
+            </div>
+        </div>
+        <!-- SCREEN 4: Inspection Results (ML Output Placeholder) -->
+        <div id="screen4" class="screen">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="progress-bar mb-6"><div class="progress-fill" style="width: 60%"></div></div>
+                <h2 class="step-title mb-2">Inspection Results</h2>
+                <p class="step-desc mb-4">Below are the detected car model and damage details from your uploaded photos.</p>
+                <div class="inspection-results-container">
+                    <canvas id="inspection-canvas" class="inspection-canvas"></canvas>
+                    <div class="results-text">
+                        <h3>Damage Assessment</h3>
+                        <p id="damage-result">Analyzing damage...</p>
+                    </div>
+                    <div style="display: flex; justify-content: center; gap: 2rem; margin-top: 1rem; flex-wrap: wrap;">
+                        <span style="color:#FF6B6B;font-weight:600;font-size:1.1rem;">Damage Areas</span>
+                    </div>
+                </div>
+                <button onclick="goToClaimDetailsScreen()" class="main-btn mt-4">
+                    Continue
+                </button>
+            </div>
+        </div>
+        <!-- SCREEN 5: Claim Information -->
+        <div id="screen5" class="screen">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="progress-bar mb-6"><div class="progress-fill" style="width: 80%"></div></div>
+                <h2 class="step-title mb-2">Claim Details</h2>
+                <form id="claim-form" class="claim-form">
+                    <input type="text" id="vin" name="vin" placeholder="Vehicle Identification Number (VIN)" required>
+                    <input type="text" id="policy" name="policy" placeholder="Policy Number" required>
+                    <input type="text" id="location" name="location" placeholder="Incident Location" required>
+                    <div style="display: flex; gap: 1rem;">
+                        <input type="date" id="date" name="date" required style="flex:1;">
+                        <input type="time" id="time" name="time" required style="flex:1;">
+                    </div>
+                    <textarea id="description" name="description" rows="3" placeholder="Incident Description" required></textarea>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Estimated Damage Value</label>
+                        <div class="flex gap-3">
+                            <button type="button" class="damage-value-btn" data-value="low">≤ $500</button>
+                            <button type="button" class="damage-value-btn" data-value="high">> $500</button>
+                        </div>
+                        <input type="hidden" id="damage-value" name="damage-value" required>
+                    </div>
+                </form>
+                <button onclick="submitClaim()" class="main-btn mt-6">
+                    Submit Claim
+                </button>
+            </div>
+        </div>
+        <!-- SCREEN 6: Success Screen -->
+        <div id="screen6" class="screen">
+            <div class="step-card glass-effect card-3d flex flex-col items-center justify-center text-center animate__animated animate__fadeIn">
+                <div class="success-checkmark mb-6">
+                    <div class="check-icon">
+                        <span class="icon-line line-tip"></span>
+                        <span class="icon-line line-long"></span>
+                        <div class="icon-circle"></div>
+                        <div class="icon-fix"></div>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Claim Submitted!</h2>
+                <p class="mb-8">Your claim has been successfully submitted. Claim number: <span class="font-medium" id="claim-number">CL-12345678</span></p>
+                <div class="glass-effect w-full max-w-md rounded-lg p-4 mb-8">
+                    <h3 class="font-medium mb-2">What happens next?</h3>
+                    <ol class="text-left text-sm space-y-2">
+                        <li class="flex items-start gap-2">
+                            <span class="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full text-xs flex-shrink-0">1</span>
+                            <span>Our claims team will review your submission within 24 hours</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full text-xs flex-shrink-0">2</span>
+                            <span>You'll receive an email with instructions for the next steps</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="inline-flex items-center justify-center w-5 h-5 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full text-xs flex-shrink-0">3</span>
+                            <span>A claims adjuster may contact you for additional information</span>
+                        </li>
+                    </ol>
+                </div>
+                <button onclick="goHome()" class="main-btn">
+                    Back to Home
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let currentScreen = 1;
+        const totalScreens = 6;
+        let uploadedFiles = [];
+        // Photo upload logic
+        const uploadBox = document.getElementById('upload-box');
+        const photoUpload = document.getElementById('photo-upload');
+        const uploadPreview = document.getElementById('upload-preview');
+        uploadBox.addEventListener('click', () => photoUpload.click());
+        uploadBox.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadBox.classList.add('dragover');
+        });
+        uploadBox.addEventListener('dragleave', e => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+        });
+        uploadBox.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadBox.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        photoUpload.addEventListener('change', e => handleFiles(e.target.files));
+        function handleFiles(files) {
+            uploadPreview.innerHTML = '';
+            uploadedFiles = Array.from(files);
+            uploadedFiles.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        uploadPreview.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-icon';
+                    icon.innerHTML = '📄';
+                    uploadPreview.appendChild(icon);
+                }
+            });
+            document.getElementById('upload-text').textContent = files.length + ' file(s) selected';
+        }
+        // Animation navigation logic
+        function animateToScreen(nextScreenId) {
+            const screens = document.querySelectorAll('.screen');
+            const current = document.querySelector('.screen.active');
+            const next = document.getElementById(nextScreenId);
+            if (current && next && current !== next) {
+                current.classList.remove('active');
+                current.classList.add('slide-out');
+                next.classList.add('slide-in');
+                setTimeout(() => {
+                    current.classList.remove('slide-out');
+                    next.classList.remove('slide-in');
+                    next.classList.add('active');
+                }, 500);
+            }
+        }
+        function goToPreviewScreen() {
+            if (uploadedFiles.length === 0) {
+                alert('Please upload at least one photo.');
+                return;
+            }
+            animateToScreen('screen3');
+            currentScreen = 3;
+            updateProgressBar();
+            const previewPhotos = document.getElementById('preview-photos');
+            previewPhotos.innerHTML = '';
+            uploadedFiles.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        previewPhotos.appendChild(img);
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    const icon = document.createElement('div');
+                    icon.className = 'file-icon';
+                    icon.innerHTML = '📄';
+                    previewPhotos.appendChild(icon);
+                }
+            });
+        }
+        function goToInspectionScreen() {
+            animateToScreen('screen4');
+            currentScreen = 4;
+            updateProgressBar();
+
+            // Show loading on canvas
+            const canvas = document.getElementById('inspection-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 900;
+            canvas.height = 600;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 24px Inter, Arial, sans-serif';
+            ctx.fillText('Analyzing your vehicle...', 280, 250);
+
+            // Reset text results
+            document.getElementById('damage-result').textContent = 'Analyzing damage...';
+
+            // Use the first uploaded image for demo (or loop through all)
+            const file = uploadedFiles[0];
+            if (!file) return;
+
+            // Color mapping for damage classes
+            const damageClassColors = {
+              "Bonnet - No Damage": "#FF0000", // Red
+              "Bonnet-moderate-dent": "#FFFF00", // Yellow
+              "Bonnet-severe-dent": "#00FF00", // Green
+              "Door-dent-Moderate": "#90EE90", // Light Green
+              "Door-dent-severe": "#00FFFF", // Cyan
+              "Door-No Damage": "#E0FFFF", // Pale Cyan
+              "fender-dent": "#0000FF", // Blue
+              "front-bumper-dent": "#FFFFFF", // White
+              "front-bumper-No Damage": "#800080", // Purple
+              "Front-Windscreen-Damage": "#008080", // Teal Blue
+              "Front-Windscreen-No Damage": "#D3D3D3", // Light Gray
+              "Headlight-Damage": "#00008B", // Dark Blue
+              "Headlight-No Damage": "#FFC0CB", // Pink
+              "Paint-peeling": "#FF007F", // Rose Pink
+              "Rear_bumper-dent-moderate": "#FF007F", // Rose Pink
+              "Rear_bumper-dent-sever": "#A52A2A", // Brown
+              "Rear_bumper-No Damage": "#FFB6C1", // Light Pink
+              "Rear-windscreen-Damage": "#8A2BE2", // Light Violet
+              "Rear-windscreen-No Damage": "#FFA500", // Light Orange
+              "Roof-dent": "#DEB887", // Light Brown
+              "RunningBoard-Dent": "#D3D3D3", // Light Gray
+              "RunningBoard-No Damage": "#F5DEB3", // Beige
+              "Sidemirror-Damage": "#000000", // Black
+              "Sidemirror-No Damage": "#0000FF", // Blue
+              "Taillight-Damage": "#FF0000" // Red
+            };
+
+            // Convert file to base64
+            const toBase64 = file => new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            toBase64(file).then(async (imageBase64) => {
+                try {
+                    const res = await fetch('http://localhost:5000/detect', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image: imageBase64 })
+                    });
+                    if (!res.ok) throw new Error('Server error');
+                    const data = await res.json();
+                    const damagePreds = data.damage?.predictions || [];
+
+                    // Load the image
+                    const img = new window.Image();
+                    img.onload = function() {
+                        // Add padding for labels
+                        const maxW = 800;
+                        const maxH = 500;
+                        const padding = 40;
+                        let scale = Math.min(1, (maxW - padding * 2) / img.width, (maxH - padding * 2) / img.height);
+                        canvas.width = img.width * scale + padding * 2;
+                        canvas.height = img.height * scale + padding * 2;
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, padding, padding, img.width * scale, img.height * scale);
+
+                        // Draw damage detections (use class color, label above box, dynamic position)
+                        ctx.lineWidth = 2;
+                        ctx.font = 'bold 14px Inter, Arial, sans-serif';
+                        let detectedDamage = 'No damage detected';
+                        if (damagePreds.length > 0) {
+                            detectedDamage = damagePreds.map(pred => pred.class).join(', ');
+                            damagePreds.forEach(pred => {
+                                const color = damageClassColors[pred.class] || '#FF6B6B';
+                                ctx.strokeStyle = color;
+                                ctx.fillStyle = color;
+                                const [x, y, w, h] = [pred.x, pred.y, pred.width, pred.height].map(v => v * scale + padding);
+                                ctx.strokeRect(x - w/2, y - h/2, w, h);
+                                // Adjust text position to ensure it's always visible
+                                const textY = (y - h/2 - 4 < 20) ? y + h/2 + 20 : y - h/2 - 4;
+                                ctx.fillText(pred.class, x - w/2, textY);
+                            });
+                        }
+                        document.getElementById('damage-result').textContent = detectedDamage;
+                    };
+                    // Use the original uploaded image as a data URL
+                    const reader = new FileReader();
+                    reader.onload = e => { img.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                } catch (e) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#FF6B6B';
+                    ctx.font = 'bold 24px Inter, Arial, sans-serif';
+                    ctx.fillText('Error', 350, 250);
+                    document.getElementById('damage-result').textContent = 'Error analyzing damage';
+                }
+            });
+        }
+        function goToClaimDetailsScreen() {
+            animateToScreen('screen5');
+            currentScreen = 5;
+            updateProgressBar();
+        }
+        function goToSuccessScreen() {
+            animateToScreen('screen6');
+            currentScreen = 6;
+            updateProgressBar();
+        }
+        function nextScreen() {
+            animateToScreen('screen2');
+            currentScreen = 2;
+            updateProgressBar();
+        }
+        function updateProgressBar() {
+            const progressFills = document.querySelectorAll('.progress-fill');
+            const progress = ((currentScreen - 1) / (totalScreens - 1)) * 100;
+            progressFills.forEach(fill => {
+                fill.style.width = progress + '%';
+            });
+        }
+        function submitClaim() {
+            const form = document.getElementById('claim-form');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+            const claimNumber = 'CL-' + Math.floor(10000000 + Math.random() * 90000000);
+            document.getElementById('claim-number').textContent = claimNumber;
+            goToSuccessScreen();
+        }
+        function goHome() {
+            animateToScreen('screen1');
+            currentScreen = 1;
+            document.getElementById('claim-form').reset();
+            uploadedFiles = [];
+            uploadPreview.innerHTML = '';
+            document.getElementById('upload-text').textContent = 'Click or drag files here to upload';
+            document.getElementById('preview-photos').innerHTML = '';
+            document.getElementById('inspection-canvas').getContext('2d').clearRect(0, 0, document.getElementById('inspection-canvas').width, document.getElementById('inspection-canvas').height);
+            updateProgressBar();
+        }
+    </script>
+</body>
+</html>
